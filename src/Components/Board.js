@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import Card from './Card'
-import Deck from './Deck'
+import GameLogic from '../GameLogic'
 
 export default class Board extends Component {
   constructor() {
     super() // Calls the parent constructor (Component)
     
-    this.deck = new Deck()
+    this.gameLogic = new GameLogic()
 
+    // Set our default state
     this.state = {
-      cards: this.deck.initCards()
+      cards: this.gameLogic.initCards()
     }
 
-    // Bind functions to this class
+    // Bind functions to this class, to be able to reference 'this'
     this.onCardOpen = this.onCardOpen.bind(this)
   }
 
@@ -27,27 +28,39 @@ export default class Board extends Component {
 
     // Check if open cards should be resetted
     let isMatch = false
-    const shouldCloseOpenCards = this.deck.shouldCloseOpenCards(cards)
+    const numberOfOpenCards = this.gameLogic.numberOfOpenCards(cards)
 
-    if (shouldCloseOpenCards) {
-      cards = this.deck.closeCards(cards)
+    if (numberOfOpenCards >= 2) {
+      cards = this.gameLogic.closeCards(cards)
     } else {
       // Is matching card also open?
-      isMatch = this.deck.isCardMatch(card, cards)
+      isMatch = this.gameLogic.isCardMatch(card, cards)
       if (isMatch) {
-        cards = this.deck.setCardsFound(cards, card.pairId)
+        cards = this.gameLogic.setCardsFound(cards, card.pairId)
       }
     }
 
     if (!isMatch) {
       // Open the card and keep playing
-      cards = this.deck.openCard(cardId, cards)
+      cards = this.gameLogic.openCard(cardId, cards)
     }
-   
+
     // Update our state with the modified cards
     this.setState({
       cards
     })
+
+    // Update the score
+    if ((numberOfOpenCards + 1) === 2){
+      let { score } = this.props;
+      score++
+      this.props.updateScore(score)
+    }
+
+    // Check if player has won
+    if (isMatch && this.gameLogic.isGameWon(cards)) {
+      this.props.onGameWon()
+    }
   }
 
   render() {

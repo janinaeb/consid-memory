@@ -1,5 +1,5 @@
 
-export default class Deck {
+export default class GameLogic {
   constructor() {
     
     this.pairs = [
@@ -59,9 +59,8 @@ export default class Deck {
     return cards
   }
 
-  shouldCloseOpenCards(cards) {
-    const numberOpenedCards = cards.filter(card => card.isOpen).length || 0
-    return numberOpenedCards >= 2
+  numberOfOpenCards(cards) {
+    return cards.filter(card => card.isOpen).length || 0
   }
 
   closeCards(cards) {
@@ -74,10 +73,6 @@ export default class Deck {
   isCardMatch(card, cards) {
     // Check if another card in the same pair is opened.
     return cards.some(c => c.pairId === card.pairId && c.id !== card.id && c.isOpen)
-  }
-
-  updateCards(card, cards, pairId) {
-
   }
 
   setCardsFound(cards, pairId) {
@@ -103,4 +98,9 @@ export default class Deck {
       return card
     })
   }
+
+  isGameWon(cards) {
+    return cards.every(card => card.isFound)
+  }
+
 }
