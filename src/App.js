@@ -5,7 +5,7 @@ import Score from './Components/Score'
 
 class App extends Component {
   constructor(){
-    super()
+    super() // Calls the parent constructor (Component)
     
     // Bind these class functions to this class to be able to reference 'this'
     this.updateScore = this.updateScore.bind(this)
